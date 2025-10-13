@@ -12,13 +12,15 @@ const setToken = jwt => {
     token = `Bearer ${jwt}`
 }
 
-const create = user => {
+const create = async newBlog => {
     const options = {
         headers: { Authorization: token }
     }
+    console.log('new Blog: ', newBlog)
+    console.log('config: ', options)
 
-    return axios.post(baseUrl, user, options)
-        .then(response => response.data)
+    const response = await axios.post(baseUrl, newBlog, options)
+    return response.data
 }
 
 export default { getAll, create, setToken }

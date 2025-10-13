@@ -2,6 +2,8 @@ import { useState, useEffect } from 'react'
 import Blog from './components/Blog'
 import blogService from './services/blogs'
 import loginService from './services/login.js'
+import Login from "./components/Login.jsx";
+import NewBlogForm from "./components/NewBlogForm.jsx";
 import Error from "./components/Error.jsx";
 import "../index.css"
 
@@ -50,28 +52,6 @@ const App = () => {
         window.localStorage.clear()
     }
 
-    const loginSection = () =>
-        (
-            <>
-                <h2>Log in to application</h2>
-                <form onSubmit={handleLogin}>
-                    <div>
-                        <label> username
-                            <input type="text" value={username}
-                                   onChange={({ target }) => setUsername(target.value)}/>
-                        </label>
-                    </div>
-                    <div>
-                        <label> password
-                            <input type="password" value={password}
-                                   onChange={({ target }) => setPassword(target.value)}/>
-                        </label>
-                    </div>
-                    <button type="submit">login</button>
-                </form>
-            </>
-        )
-
     const blogsSection = () =>
         (
             <div>
@@ -84,11 +64,17 @@ const App = () => {
 
     return <div>
         <Error notification={error}/>
-        { !user && loginSection() }
+        { !user && <Login
+            handleLogin={handleLogin}
+            username={username}
+            setUsername={setUsername}
+            password={password}
+            setPassword={setPassword}/> }
         { user && (
             <div>
                 <div>{user.name} logged in </div>
                 <form onSubmit={handleLogout}><button type="submit">Logout</button></form>
+                <NewBlogForm setError={setError}/>
                 { blogsSection() }
             </div>
         ) }
