@@ -12,13 +12,13 @@ const setToken = jwt => {
     token = `Bearer ${jwt}`
 }
 
-const login = user => {
+const create = user => {
     const options = {
         headers: { Authorization: token }
     }
 
-    return axios.post('/api/login', user, options)
+    return axios.post(baseUrl, user, options)
         .then(response => response.data)
 }
 
-export default { getAll, login, setToken }
+export default { getAll, create, setToken }

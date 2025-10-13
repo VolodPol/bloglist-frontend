@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import Blog from './components/Blog'
 import blogService from './services/blogs'
+import loginService from './services/login.js'
 import Error from "./components/Error.jsx";
 import "../index.css"
 
@@ -18,11 +19,21 @@ const App = () => {
         )
     }, [])
 
+    useEffect(() => {
+        const loggedUserJSON = window.localStorage.getItem('loggedInUser')
+        if (loggedUserJSON) {
+            const resolvedUser = JSON.parse(loggedUserJSON)
+            setUser(resolvedUser)
+            blogService.setToken(resolvedUser.token)
+        }
+    }, [])
 
-    const handleLogin = (event) => {
+
+    const handleLogin = async event => {
+        event.preventDefault()
         try {
-            event.preventDefault()
-            const loggedIn = blogService.login({ username, password })
+            const loggedIn = await loginService.login({ username, password })
+            window.localStorage.setItem('loggedInUser', JSON.stringify(loggedIn))
             blogService.setToken(loggedIn.token)
             setUser(loggedIn)
             setUsername('')
@@ -33,6 +44,10 @@ const App = () => {
                 setError(null)
             }, 5000)
         }
+    }
+
+    const handleLogout = () => {
+        window.localStorage.clear()
     }
 
     const loginSection = () =>
@@ -70,7 +85,13 @@ const App = () => {
     return <div>
         <Error notification={error}/>
         { !user && loginSection() }
-        { user && blogsSection() }
+        { user && (
+            <div>
+                <div>{user.name} logged in </div>
+                <form onSubmit={handleLogout}><button type="submit">Logout</button></form>
+                { blogsSection() }
+            </div>
+        ) }
     </div>
 }
 
