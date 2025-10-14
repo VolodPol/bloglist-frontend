@@ -4,7 +4,7 @@ import blogService from './services/blogs'
 import loginService from './services/login.js'
 import Login from "./components/Login.jsx";
 import NewBlogForm from "./components/NewBlogForm.jsx";
-import Error from "./components/Error.jsx";
+import Notification from "./components/Notification.jsx";
 import "../index.css"
 
 
@@ -13,22 +13,22 @@ const App = () => {
     const [username, setUsername] = useState('')
     const [password, setPassword] = useState('')
     const [user, setUser] = useState(null)
-    const [error, setError] = useState(null)
+    const [notification, setNotification] = useState(null)
 
     useEffect(() => {
-        blogService.getAll().then(blogs =>
-            setBlogs(blogs)
-        )
-    }, [])
-
-    useEffect(() => {
+        (async () => setBlogs(await blogService.getAll())) ()
         const loggedUserJSON = window.localStorage.getItem('loggedInUser')
         if (loggedUserJSON) {
             const resolvedUser = JSON.parse(loggedUserJSON)
             setUser(resolvedUser)
             blogService.setToken(resolvedUser.token)
         }
-    }, [])
+    }, [notification])
+
+    const notify = (notification, timeout = 5000) => {
+        setNotification(notification)
+        setTimeout(() => setNotification(null), timeout)
+    }
 
 
     const handleLogin = async event => {
@@ -41,10 +41,7 @@ const App = () => {
             setUsername('')
             setPassword('')
         } catch {
-            setError('wrong credentials')
-            setTimeout(() => {
-                setError(null)
-            }, 5000)
+            notify({ message: 'Wrong credentials' })
         }
     }
 
@@ -63,7 +60,7 @@ const App = () => {
         )
 
     return <div>
-        <Error notification={error}/>
+        <Notification notification={notification}/>
         { !user && <Login
             handleLogin={handleLogin}
             username={username}
@@ -74,7 +71,7 @@ const App = () => {
             <div>
                 <div>{user.name} logged in </div>
                 <form onSubmit={handleLogout}><button type="submit">Logout</button></form>
-                <NewBlogForm setError={setError}/>
+                <NewBlogForm notify={notify}/>
                 { blogsSection() }
             </div>
         ) }

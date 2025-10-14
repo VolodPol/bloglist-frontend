@@ -2,7 +2,7 @@ import { useState } from "react";
 import blogService from '../services/blogs'
 
 
-const NewBlogForm = ({ setError }) => {
+const NewBlogForm = ({ notify }) => {
     const [title, setTitle] = useState('')
     const [author, setAuthor] = useState('')
     const [url, setUrl] = useState('')
@@ -15,11 +15,9 @@ const NewBlogForm = ({ setError }) => {
             await blogService.create({
                 title, author, url
             })
+            notify({ status: true, message: `A new blog: ${title} by ${author} added` })
         } else {
-            setError('All fields are mandatory!')
-            setTimeout(() => {
-                setError(null)
-            }, 5000)
+            notify({ message: 'All fields are mandatory!' })
         }
     }
 
