@@ -1,3 +1,17 @@
+.blog {
+    border-color: black;
+    border-width: 1px;
+    border-style: solid;
+    border-right-style: none;
+
+    padding-top: 10px;
+    padding-left: 2px;
+    margin-bottom: 5px;
+}
+
+
+
+
 .message {
     background: lightgrey;
     font-size: 20px;
