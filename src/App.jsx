@@ -6,6 +6,7 @@ import Login from "./components/Login.jsx";
 import NewBlogForm from "./components/NewBlogForm.jsx";
 import Notification from "./components/Notification.jsx";
 import "../index.css"
+import {Togglable} from "./components/Togglable.jsx";
 
 
 const App = () => {
@@ -52,7 +53,6 @@ const App = () => {
     const blogsSection = () =>
         (
             <div>
-                <h2>blogs</h2>
                 {blogs.map(blog =>
                     <Blog key={blog.id} blog={blog}/>
                 )}
@@ -69,9 +69,19 @@ const App = () => {
             setPassword={setPassword}/> }
         { user && (
             <div>
-                <div>{user.name} logged in </div>
-                <form onSubmit={handleLogout}><button type="submit">Logout</button></form>
-                <NewBlogForm notify={notify}/>
+                <h2>blogs</h2>
+                <div>
+                    <form onSubmit={handleLogout}>
+                        <label>
+                            {user.name} logged in <button type="submit">Logout</button>
+                        </label>
+                    </form>
+                </div>
+                <br/>
+
+                <Togglable buttonLabel="create new blog">
+                    <NewBlogForm notify={notify}/>
+                </Togglable>
                 { blogsSection() }
             </div>
         ) }
