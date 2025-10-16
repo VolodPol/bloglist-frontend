@@ -1,7 +1,12 @@
-import { useState } from "react";
+import { useState, useImperativeHandle } from "react";
 
-export const Togglable = ({ children, buttonLabel }) => {
+export const Togglable = ({ children, buttonLabel, ref }) => {
     const [isVisible, setIsVisible] = useState(false)
+
+    useImperativeHandle(ref, () => (
+        { setIsVisible }
+    ))
+
 
     const show = { display: isVisible ? '' : 'none' }
     return (

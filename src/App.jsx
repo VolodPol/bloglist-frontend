@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import {useState, useEffect, useRef} from 'react'
 import Blog from './components/Blog'
 import blogService from './services/blogs'
 import loginService from './services/login.js'
@@ -16,15 +16,20 @@ const App = () => {
     const [user, setUser] = useState(null)
     const [notification, setNotification] = useState(null)
 
+    const blogFormRef = useRef(null)
+
     useEffect(() => {
         (async () => setBlogs(await blogService.getAll())) ()
+    }, [user]);
+
+    useEffect(() => {
         const loggedUserJSON = window.localStorage.getItem('loggedInUser')
         if (loggedUserJSON) {
             const resolvedUser = JSON.parse(loggedUserJSON)
             setUser(resolvedUser)
             blogService.setToken(resolvedUser.token)
         }
-    }, [notification])
+    }, [])
 
     const notify = (notification, timeout = 5000) => {
         setNotification(notification)
@@ -46,15 +51,31 @@ const App = () => {
         }
     }
 
-    const handleLogout = () => {
+    const handleLogout = (event) => {
+        event.preventDefault()
         window.localStorage.clear()
+        setUser(null)
+    }
+
+    const onCreate = async (newBlog) => {
+        blogFormRef.current.setIsVisible(false)
+        setBlogs(blogs.concat(await blogService.create(newBlog)))
+    }
+
+    const onLike = async id => {
+        const position = blogs.findIndex(it => it.id === id)
+        const requested = blogs[position]
+        requested.likes += 1
+        const updatedBlogs = blogs
+        updatedBlogs[position] = await blogService.update(requested)
+        setBlogs(updatedBlogs)
     }
 
     const blogsSection = () =>
         (
             <div>
                 {blogs.map(blog =>
-                    <Blog key={blog.id} blog={blog}/>
+                    <Blog key={blog.id} blog={blog} onLike={onLike}/>
                 )}
             </div>
         )
@@ -79,8 +100,8 @@ const App = () => {
                 </div>
                 <br/>
 
-                <Togglable buttonLabel="create new blog">
-                    <NewBlogForm notify={notify}/>
+                <Togglable buttonLabel="create new blog" ref={blogFormRef}>
+                    <NewBlogForm onCreate={onCreate} notify={notify}/>
                 </Togglable>
                 { blogsSection() }
             </div>
