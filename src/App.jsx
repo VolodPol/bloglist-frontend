@@ -1,12 +1,12 @@
-import {useState, useEffect, useRef} from 'react'
+import { useState, useEffect, useRef } from 'react'
 import Blog from './components/Blog'
 import blogService from './services/blogs'
 import loginService from './services/login.js'
-import Login from "./components/Login.jsx"
-import Togglable from "./components/Togglable.jsx"
-import NewBlogForm from "./components/NewBlogForm.jsx"
-import Notification from "./components/Notification.jsx"
-import "../index.css"
+import Login from './components/Login.jsx'
+import Togglable from './components/Togglable.jsx'
+import NewBlogForm from './components/NewBlogForm.jsx'
+import Notification from './components/Notification.jsx'
+import '../index.css'
 
 
 const App = () => {
@@ -41,7 +41,7 @@ const App = () => {
                 blogs
                     .filter(it => it.user.username === user.username)
                     .map(it => it.id)
-                )
+            )
             )
         }
     }, [blogs, user])
@@ -77,11 +77,11 @@ const App = () => {
 
     const onCreate = async (newBlog) => {
         blogFormRef.current.setIsVisible(false)
-        const created = await blogService.create(newBlog);
+        const created = await blogService.create(newBlog)
         created.user = {
             username: user.username,
             name: user.name,
-            id: user["userId"]
+            id: user['userId']
         }
         setBlogs(blogs.concat(created))
     }
@@ -113,10 +113,10 @@ const App = () => {
                         .toSorted(sorter)
                         .map(blog =>
                             <Blog key={ blog.id }
-                                  blog={ blog }
-                                  onLike={ onLike }
-                                  isRemovable={ createdByUser.has(blog.id) }
-                                  onRemove={onRemove}
+                                blog={ blog }
+                                onLike={ onLike }
+                                isRemovable={ createdByUser.has(blog.id) }
+                                onRemove={onRemove}
                             />
                         )
                 }

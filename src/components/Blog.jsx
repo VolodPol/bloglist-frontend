@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState } from 'react'
 
 
 const Blog = ({ blog, onLike, isRemovable, onRemove }) => {
@@ -13,7 +13,7 @@ const Blog = ({ blog, onLike, isRemovable, onRemove }) => {
         setTitle(blog.title)
         setAuthor(blog.author)
         setUrl(blog.url)
-    }, [blog]);
+    }, [blog])
 
 
     const likeBlog = async () => {
@@ -37,7 +37,7 @@ const Blog = ({ blog, onLike, isRemovable, onRemove }) => {
                     <div>
                         <span>{likes} <button onClick={ () => likeBlog() }>like</button></span>
                     </div>
-                    { isRemovable && <button className={"remove-button"} onClick={() => onRemove(blog)}>remove</button> }
+                    { isRemovable && <button className={'remove-button'} onClick={() => onRemove(blog)}>remove</button> }
                 </div>
             }
         </div>

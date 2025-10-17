@@ -5,7 +5,7 @@ const Notification = ({ notification }) => {
 
     let className = 'message'
 
-    const { status, message } = notification;
+    const { status, message } = notification
     !status && (className += ' error')
 
     return (
@@ -15,4 +15,4 @@ const Notification = ({ notification }) => {
     )
 }
 
-export default Notification;
+export default Notification
