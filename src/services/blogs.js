@@ -13,10 +13,8 @@ const setToken = jwt => {
 }
 
 const create = async newBlog => {
-    const options = {
-        headers: { Authorization: token }
-    }
-    const response = await axios.post(baseUrl, newBlog, options)
+    const config = { headers: { Authorization: token } }
+    const response = await axios.post(baseUrl, newBlog, config)
     return response.data
 }
 
@@ -25,4 +23,9 @@ const update = async updated => {
     return (await axios.put(`${baseUrl}/${id}`, updated)).data
 }
 
-export default { getAll, create, setToken, update }
+const remove = async id => {
+    const config = { headers: { Authorization: token } }
+    await axios.delete(`${baseUrl}/${id}`, config)
+}
+
+export default { getAll, create, setToken, update, remove }

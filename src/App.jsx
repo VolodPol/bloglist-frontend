@@ -2,11 +2,11 @@ import {useState, useEffect, useRef} from 'react'
 import Blog from './components/Blog'
 import blogService from './services/blogs'
 import loginService from './services/login.js'
-import Login from "./components/Login.jsx";
-import NewBlogForm from "./components/NewBlogForm.jsx";
-import Notification from "./components/Notification.jsx";
+import Login from "./components/Login.jsx"
+import Togglable from "./components/Togglable.jsx"
+import NewBlogForm from "./components/NewBlogForm.jsx"
+import Notification from "./components/Notification.jsx"
 import "../index.css"
-import {Togglable} from "./components/Togglable.jsx";
 
 
 const App = () => {
@@ -16,11 +16,13 @@ const App = () => {
     const [user, setUser] = useState(null)
     const [notification, setNotification] = useState(null)
 
+    const [createdByUser, setCreatedByUser] = useState(() => new Set())
+
     const blogFormRef = useRef(null)
 
     useEffect(() => {
-        (async () => setBlogs(await blogService.getAll())) ()
-    }, [user]);
+        (async () => setBlogs((await blogService.getAll()))) ()
+    }, [user])
 
     useEffect(() => {
         const loggedUserJSON = window.localStorage.getItem('loggedInUser')
@@ -30,6 +32,19 @@ const App = () => {
             blogService.setToken(resolvedUser.token)
         }
     }, [])
+
+    useEffect(() => {
+        if (blogs && user) {
+            console.log('username: ', user.username)
+            console.log(blogs)
+            setCreatedByUser(new Set(
+                blogs
+                    .filter(it => it.user.username === user.username)
+                    .map(it => it.id)
+                )
+            )
+        }
+    }, [blogs, user])
 
     const notify = (notification, timeout = 5000) => {
         setNotification(notification)
@@ -41,6 +56,7 @@ const App = () => {
         event.preventDefault()
         try {
             const loggedIn = await loginService.login({ username, password })
+            console.log('loggedIn: ', loggedIn)
             window.localStorage.setItem('loggedInUser', JSON.stringify(loggedIn))
             blogService.setToken(loggedIn.token)
             setUser(loggedIn)
@@ -55,11 +71,19 @@ const App = () => {
         event.preventDefault()
         window.localStorage.clear()
         setUser(null)
+        setBlogs([])
+        setCreatedByUser(new Set())
     }
 
     const onCreate = async (newBlog) => {
         blogFormRef.current.setIsVisible(false)
-        setBlogs(blogs.concat(await blogService.create(newBlog)))
+        const created = await blogService.create(newBlog);
+        created.user = {
+            username: user.username,
+            name: user.name,
+            id: user["userId"]
+        }
+        setBlogs(blogs.concat(created))
     }
 
     const onLike = async id => {
@@ -71,6 +95,14 @@ const App = () => {
         setBlogs(updatedBlogs.toSorted(sorter))
     }
 
+    const onRemove = async blog => {
+        const { id, title, author } = blog
+        if (window.confirm(`Remove blog ${title} by ${author} ?`)) {
+            await blogService.remove(id)
+            setBlogs(blogs.filter(it => it.id !== id))
+        }
+    }
+
     const sorter = (a, b) => b.likes - a.likes
 
     const blogsSection = () =>
@@ -80,7 +112,12 @@ const App = () => {
                     blogs
                         .toSorted(sorter)
                         .map(blog =>
-                            <Blog key={blog.id} blog={blog} onLike={onLike}/>
+                            <Blog key={ blog.id }
+                                  blog={ blog }
+                                  onLike={ onLike }
+                                  isRemovable={ createdByUser.has(blog.id) }
+                                  onRemove={onRemove}
+                            />
                         )
                 }
             </div>

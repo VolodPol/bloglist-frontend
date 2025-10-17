@@ -26,3 +26,7 @@
 .message.error {
     color: red;
 }
+
+.remove-button {
+    background-color: blue;
+}

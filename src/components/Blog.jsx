@@ -1,6 +1,7 @@
-import {useEffect, useState} from "react";
+import { useEffect, useState } from "react";
 
-const Blog = ({ blog, onLike }) => {
+
+const Blog = ({ blog, onLike, isRemovable, onRemove }) => {
     const [show, setShow] = useState(false)
 
     const [likes, setLikes] = useState(blog.likes)
@@ -21,14 +22,14 @@ const Blog = ({ blog, onLike }) => {
     }
 
 
-    const button = () =>
+    const detailsButton = () =>
         <button onClick={() => setShow(!show)}>
             {show ? 'hide' : 'view'}
         </button>
 
     return (
         <div className="blog">
-            <span>{title} {button()}</span>
+            <span>{title} {author} {detailsButton()}</span>
             {
                 show &&
                 <div>
@@ -36,9 +37,7 @@ const Blog = ({ blog, onLike }) => {
                     <div>
                         <span>{likes} <button onClick={ () => likeBlog() }>like</button></span>
                     </div>
-                    <div>
-                        <span>{author}</span>
-                    </div>
+                    { isRemovable && <button className={"remove-button"} onClick={() => onRemove(blog)}>remove</button> }
                 </div>
             }
         </div>
