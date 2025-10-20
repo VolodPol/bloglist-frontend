@@ -29,7 +29,7 @@ const Blog = ({ blog, onLike, isRemovable, onRemove }) => {
 
     return (
         <div className="blog">
-            <span>{title} {author} {detailsButton()}</span>
+            <span data-testid="title">{title} {author} {detailsButton()}</span>
             {
                 show &&
                 <div>
