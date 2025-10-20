@@ -33,8 +33,8 @@ const Blog = ({ blog, onLike, isRemovable, onRemove }) => {
             {
                 show &&
                 <div>
-                    <div>{url}</div>
-                    <div>
+                    <div data-testid="url">{url}</div>
+                    <div data-testid="likes">
                         <span>{likes} <button onClick={ () => likeBlog() }>like</button></span>
                     </div>
                     { isRemovable && <button className={'remove-button'} onClick={() => onRemove(blog)}>remove</button> }
