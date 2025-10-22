@@ -1,4 +1,5 @@
 import { expect, test } from  '@playwright/test'
+import { createBlog, login } from './utils/helper'
 
 
 const mockUser = {
@@ -10,7 +11,7 @@ const mockUser = {
 
 test.describe('Blog app', () => {
     test.beforeEach(async ({ page, request }) => {
-        await request.post('/testing/reset')
+        await request.post('/api/reset')
         await request.post('/api/users', {
             data: mockUser
         })
@@ -31,21 +32,49 @@ test.describe('Blog app', () => {
 
     test.describe('Login', () => {
         test('succeeds with correct credentials', async ({ page }) => {
-            await page.getByLabel('username').fill(mockUser.username)
-            await page.getByLabel('password').fill(mockUser.password)
-            await page.getByRole('button', { name: 'login' }).click()
-
+            await login(page, mockUser.username, mockUser.password)
             await expect(page.getByText(`${mockUser.name} logged in`)).toBeVisible()
         })
 
         test('fails with wrong credentials', async ({ page }) => {
-            await page.getByLabel('username').fill(mockUser.username)
-            await page.getByLabel('password').fill('wrong')
-            await page.getByRole('button', { name: 'login' }).click()
-
+            await login(page, mockUser.username, 'wrong')
             await expect(page.getByText('wrong credentials')).toBeVisible()
-
             await expect(page.getByText(`${mockUser.name} logged in`)).not.toBeVisible()
+        })
+    })
+
+    test.describe('When logged in', () => {
+        test.beforeEach(async ({ page }) => {
+            await login(page, mockUser.username, mockUser.password)
+        })
+
+        test('a new blog can be created', async ({ page }) => {
+            await createBlog(page, 'title', 'author', 'https://url')
+
+            await expect(page.getByText('title author')).toBeVisible()
+            await expect(page.getByRole('button', { name: 'View' })).toBeVisible()
+        })
+
+        test('like button verification', async ({ page }) => {
+            await createBlog(page, 'title', 'author', 'https://url')
+            await page.getByRole('button', { name: 'View' }).click()
+
+            await page.getByRole('button', { name: 'like' }).click()
+            await expect(page.getByTestId('likes')).toContainText('1')
+        })
+
+        test('user can delete own blogs', async ({ page }) => {
+            await createBlog(page, 'title', 'author', 'https://url')
+            await page.getByRole('button', { name: 'View' }).click()
+
+            const deleteBtn = page.getByRole('button', { name: 'remove' })
+            await expect(deleteBtn).toBeVisible()
+            await expect(deleteBtn).toBeEnabled()
+
+            page.on('dialog', dialog => dialog.accept())
+            await deleteBtn.click()
+
+            await expect(page.getByText('title author')).not.toBeVisible()
         })
     })
 })
