@@ -1,13 +1,17 @@
 import { expect, test } from  '@playwright/test'
 import { createBlog, login } from './utils/helper'
 
-
 const mockUser = {
     name: 'Matti Luukkainen',
     username: 'mluukkai',
     password: 'salainen'
 }
 
+const mockBlog = {
+    title: 'title',
+    author: 'author',
+    url: 'https://url'
+}
 
 test.describe('Blog app', () => {
     test.beforeEach(async ({ page, request }) => {
@@ -49,14 +53,14 @@ test.describe('Blog app', () => {
         })
 
         test('a new blog can be created', async ({ page }) => {
-            await createBlog(page, 'title', 'author', 'https://url')
+            await createBlog(page, mockBlog.title, mockBlog.author, mockBlog.url)
 
             await expect(page.getByText('title author')).toBeVisible()
             await expect(page.getByRole('button', { name: 'View' })).toBeVisible()
         })
 
         test('like button verification', async ({ page }) => {
-            await createBlog(page, 'title', 'author', 'https://url')
+            await createBlog(page, mockBlog.title, mockBlog.author, mockBlog.url)
             await page.getByRole('button', { name: 'View' }).click()
 
             await page.getByRole('button', { name: 'like' }).click()
@@ -64,7 +68,7 @@ test.describe('Blog app', () => {
         })
 
         test('user can delete own blogs', async ({ page }) => {
-            await createBlog(page, 'title', 'author', 'https://url')
+            await createBlog(page, mockBlog.title, mockBlog.author, mockBlog.url)
             await page.getByRole('button', { name: 'View' }).click()
 
             const deleteBtn = page.getByRole('button', { name: 'remove' })
@@ -75,6 +79,23 @@ test.describe('Blog app', () => {
             await deleteBtn.click()
 
             await expect(page.getByText('title author')).not.toBeVisible()
+        })
+
+        test('user cannot delete own blogs', async ({ page, request }) => {
+            await createBlog(page, mockBlog.title, mockBlog.author, mockBlog.url)
+            await page.getByText('Logout').click()
+
+            const secondUser= {
+                name: 'John Doe',
+                username: 'Jdd',
+                password: '123456789'
+            }
+            await request.post('/api/users', { data: secondUser })
+            await login(page, secondUser.username, secondUser.password)
+            await page.getByRole('button', { name: 'View' }).click()
+
+            const deleteBtn = page.getByRole('button', { name: 'remove' })
+            await expect(deleteBtn).not.toBeVisible()
         })
     })
 })
