@@ -97,5 +97,17 @@ test.describe('Blog app', () => {
             const deleteBtn = page.getByRole('button', { name: 'remove' })
             await expect(deleteBtn).not.toBeVisible()
         })
+
+        test('verify blogs are arranges in the order based on likes', async ({ page }) => {
+            await createBlog(page, 'title_1', mockBlog.author, mockBlog.url)
+            await createBlog(page, 'title_2', mockBlog.author, mockBlog.url)
+
+            const blogLocator = page.getByTestId('blog')
+            const recentlyAdded = blogLocator.last()
+            await recentlyAdded.getByRole('button', { name: 'View' }).click()
+            await recentlyAdded.getByRole('button', { name: 'like' }).click()
+            const mostLiked = blogLocator.first()
+            await expect(mostLiked).toContainText(`title_2 ${mockBlog.author}`)
+        })
     })
 })

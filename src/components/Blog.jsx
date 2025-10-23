@@ -28,7 +28,7 @@ const Blog = ({ blog, onLike, isRemovable, onRemove }) => {
         </button>
 
     return (
-        <div className="blog">
+        <div data-testid="blog" className="blog">
             <span data-testid="title">{title} {author} {detailsButton()}</span>
             {
                 show &&
