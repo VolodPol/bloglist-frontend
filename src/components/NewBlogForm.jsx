@@ -21,9 +21,9 @@ const NewBlogForm = ({ onCreate }) => {
         if (titleField && authorField && urlField) {
             onCreate({ title: titleField, author: authorField, url: urlField })
             reset()
-            dispatch(notify({ status: true, message: `A new blog: ${titleField} by ${authorField} added` }))
+            dispatch(notify(`A new blog: ${titleField} by ${authorField} added`, true))
         } else {
-            dispatch(notify({ message: 'All fields are mandatory!' }))
+            dispatch(notify('All fields are mandatory!'))
         }
     }
 

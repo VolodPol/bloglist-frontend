@@ -54,7 +54,7 @@ const App = () => {
             setUsername('')
             setPassword('')
         } catch {
-            dispatch(notify({ message: 'Wrong credentials' }))
+            dispatch(notify('Wrong credentials'))
         }
     }
 
