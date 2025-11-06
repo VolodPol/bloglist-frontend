@@ -8,22 +8,22 @@ const getAll = async () => {
     return response.data
 }
 
-const setToken = jwt => {
+const setToken = (jwt) => {
     token = `Bearer ${jwt}`
 }
 
-const create = async newBlog => {
+const create = async (newBlog) => {
     const config = { headers: { Authorization: token } }
     const response = await axios.post(baseUrl, newBlog, config)
     return response.data
 }
 
-const update = async updated => {
+const update = async (updated) => {
     const { id } = updated
     return (await axios.put(`${baseUrl}/${id}`, updated)).data
 }
 
-const remove = async id => {
+const remove = async (id) => {
     const config = { headers: { Authorization: token } }
     await axios.delete(`${baseUrl}/${id}`, config)
 }

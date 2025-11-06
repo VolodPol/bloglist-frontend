@@ -8,11 +8,7 @@ const Notification = ({ notification }) => {
     const { status, message } = notification
     !status && (className += ' error')
 
-    return (
-        <div className={className}>
-            {message}
-        </div>
-    )
+    return <div className={className}>{message}</div>
 }
 
 export default Notification

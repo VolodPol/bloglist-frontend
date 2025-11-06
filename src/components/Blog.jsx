@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react'
 
-
 const Blog = ({ blog, onLike, isRemovable, onRemove }) => {
     const [show, setShow] = useState(false)
 
@@ -15,31 +14,35 @@ const Blog = ({ blog, onLike, isRemovable, onRemove }) => {
         setUrl(blog.url)
     }, [blog])
 
-
     const likeBlog = async () => {
         onLike(blog.id)
         setLikes(likes + 1)
     }
 
-
-    const detailsButton = () =>
-        <button onClick={() => setShow(!show)}>
-            {show ? 'hide' : 'view'}
-        </button>
+    const detailsButton = () => (
+        <button onClick={() => setShow(!show)}>{show ? 'hide' : 'view'}</button>
+    )
 
     return (
-        <div data-testid="blog" className="blog">
-            <span data-testid="title">{title} {author} {detailsButton()}</span>
-            {
-                show &&
+        <div data-testid='blog' className='blog'>
+            <span data-testid='title'>
+                {title} {author} {detailsButton()}
+            </span>
+            {show && (
                 <div>
-                    <div data-testid="url">{url}</div>
-                    <div data-testid="likes">
-                        <span>{likes} <button onClick={ () => likeBlog() }>like</button></span>
+                    <div data-testid='url'>{url}</div>
+                    <div data-testid='likes'>
+                        <span>
+                            {likes} <button onClick={() => likeBlog()}>like</button>
+                        </span>
                     </div>
-                    { isRemovable && <button className={'remove-button'} onClick={() => onRemove(blog)}>remove</button> }
+                    {isRemovable && (
+                        <button className={'remove-button'} onClick={() => onRemove(blog)}>
+                            remove
+                        </button>
+                    )}
                 </div>
-            }
+            )}
         </div>
     )
 }
