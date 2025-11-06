@@ -1,9 +1,13 @@
 import { useState } from 'react'
+import { useDispatch } from 'react-redux'
+import { notify } from '../reducers/notificationReducer.js'
 
-const NewBlogForm = ({ onCreate, notify }) => {
+const NewBlogForm = ({ onCreate }) => {
     const [titleField, setTitleField] = useState('')
     const [authorField, setAuthorField] = useState('')
     const [urlField, setUrlField] = useState('')
+
+    const dispatch = useDispatch()
 
     const reset = () => {
         setTitleField('')
@@ -17,9 +21,9 @@ const NewBlogForm = ({ onCreate, notify }) => {
         if (titleField && authorField && urlField) {
             onCreate({ title: titleField, author: authorField, url: urlField })
             reset()
-            notify({ status: true, message: `A new blog: ${titleField} by ${authorField} added` })
+            dispatch(notify({ status: true, message: `A new blog: ${titleField} by ${authorField} added` }))
         } else {
-            notify({ message: 'All fields are mandatory!' })
+            dispatch(notify({ message: 'All fields are mandatory!' }))
         }
     }
 

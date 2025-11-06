@@ -1,4 +1,6 @@
 import { useState, useEffect, useRef } from 'react'
+import { useDispatch } from 'react-redux'
+import { notify } from './reducers/notificationReducer.js'
 import Blog from './components/Blog'
 import blogService from './services/blogs'
 import loginService from './services/login.js'
@@ -13,11 +15,10 @@ const App = () => {
     const [username, setUsername] = useState('')
     const [password, setPassword] = useState('')
     const [user, setUser] = useState(null)
-    const [notification, setNotification] = useState(null)
-
     const [createdByUser, setCreatedByUser] = useState(() => new Set())
-
     const blogFormRef = useRef(null)
+
+    const dispatch = useDispatch()
 
     useEffect(() => {
         (async () => setBlogs(await blogService.getAll()))()
@@ -42,11 +43,6 @@ const App = () => {
         }
     }, [blogs, user])
 
-    const notify = (notification, timeout = 5000) => {
-        setNotification(notification)
-        setTimeout(() => setNotification(null), timeout)
-    }
-
     const handleLogin = async (event) => {
         event.preventDefault()
         try {
@@ -58,7 +54,7 @@ const App = () => {
             setUsername('')
             setPassword('')
         } catch {
-            notify({ message: 'Wrong credentials' })
+            dispatch(notify({ message: 'Wrong credentials' }))
         }
     }
 
@@ -116,7 +112,7 @@ const App = () => {
 
     return (
         <div>
-            <Notification notification={notification} />
+            <Notification />
             {!user && (
                 <Login
                     handleLogin={handleLogin}
