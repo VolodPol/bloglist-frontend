@@ -1,13 +1,20 @@
 import userEvent from '@testing-library/user-event'
 import { render, screen } from '@testing-library/react'
 import NewBlogForm from '../src/components/NewBlogForm.jsx'
+import { Provider } from 'react-redux'
+import { configureStore } from '@reduxjs/toolkit'
 
 test('Blog form updates parent state and calls onSubmit', async () => {
     const user = userEvent.setup()
     const mockOnCreate = vi.fn()
-    const mockNotify = vi.fn()
 
-    render(<NewBlogForm onCreate={mockOnCreate} notify={mockNotify}  />)
+    const testStore = configureStore({
+        reducer: (state = { blogs: [], notification: {} }) => state
+    })
+    render(<Provider store={testStore}>
+        <NewBlogForm onCreate={mockOnCreate}  />
+    </Provider>
+    )
 
     const titleField = screen.getByLabelText('title:')
     const authorField = screen.getByLabelText('author:')
@@ -27,7 +34,6 @@ test('Blog form updates parent state and calls onSubmit', async () => {
     await user.click(sendButton)
 
     expect(mockOnCreate.mock.calls).toHaveLength(1)
-    expect(mockNotify.mock.calls).toHaveLength(1)
     const actualContent = mockOnCreate.mock.calls[0][0]
 
     expect(actualContent.title).toBe(expected.title)
