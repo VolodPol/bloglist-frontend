@@ -1,41 +1,47 @@
 import { useState, useEffect, useRef } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { notify } from './reducers/notificationReducer.js'
-import { addBlog, clearBlogs, fetchBlogs, removeBlog } from './reducers/blogReducer.js'
+import { addBlog, setBlogs, fetchBlogs, removeBlog, clearBlogs } from './reducers/blogReducer.js'
 import Blog from './components/Blog'
-import blogService from './services/blogs'
-import loginService from './services/login.js'
 import Login from './components/Login.jsx'
 import Togglable from './components/Togglable.jsx'
 import NewBlogForm from './components/NewBlogForm.jsx'
 import Notification from './components/Notification.jsx'
+import {
+    useCreateBlogMutation,
+    useLazyGetBlogsQuery,
+    useUpdateBlogMutation,
+} from './services/api/blogApi.js'
+import { loginUser, logoutUser, readUser } from './reducers/authenticationReducer.js'
 import '../index.css'
-import { useUpdateBlogMutation } from './services/api/blogApi.js'
 
 const App = () => {
+    const user = useSelector(state => state.authentication.user)
     const blogs = useSelector(state => state.blogs)
     const [updateBlog] = useUpdateBlogMutation()
+    const [createBlog] = useCreateBlogMutation()
 
     const [username, setUsername] = useState('')
     const [password, setPassword] = useState('')
-    const [user, setUser] = useState(null)
     const [createdByUser, setCreatedByUser] = useState(() => new Set())
     const blogFormRef = useRef(null)
 
     const dispatch = useDispatch()
 
-    useEffect(() => {
-        if (user) dispatch(fetchBlogs())
-    }, [dispatch, user])
+    const [ getBlogs ] = useLazyGetBlogsQuery()
 
     useEffect(() => {
-        const loggedUserJSON = window.localStorage.getItem('loggedInUser')
-        if (loggedUserJSON) {
-            const resolvedUser = JSON.parse(loggedUserJSON)
-            setUser(resolvedUser)
-            blogService.setToken(resolvedUser.token)
+        if (user) {
+            getBlogs().then((result) => {
+                if (result?.data)
+                    dispatch(setBlogs(result.data))
+            })
         }
-    }, [])
+    }, [dispatch, getBlogs, user])
+
+    useEffect(() => {
+        dispatch(readUser())
+    }, [dispatch])
 
     useEffect(() => {
         if (blogs && user) {
@@ -50,10 +56,7 @@ const App = () => {
     const handleLogin = async (event) => {
         event.preventDefault()
         try {
-            const loggedIn = await loginService.login({ username, password })
-            window.localStorage.setItem('loggedInUser', JSON.stringify(loggedIn))
-            blogService.setToken(loggedIn.token)
-            setUser(loggedIn)
+            dispatch(loginUser(username, password))
             setUsername('')
             setPassword('')
         } catch { dispatch(notify('Wrong credentials')) }
@@ -61,21 +64,23 @@ const App = () => {
 
     const handleLogout = (event) => {
         event.preventDefault()
-        window.localStorage.clear()
-        setUser(null)
+        dispatch(logoutUser())
         dispatch(clearBlogs())
         setCreatedByUser(new Set())
     }
 
     const onCreate = async (newBlog) => {
         blogFormRef.current.setIsVisible(false)
-        const created = await blogService.create(newBlog)
-        created.user = {
-            username: user.username,
-            name: user.name,
-            id: user['userId'],
+        const { data: created } = await createBlog(newBlog)
+        const updated = {
+            ...created,
+            user: {
+                username: user.username,
+                name: user.name,
+                id: user['userId'],
+            }
         }
-        dispatch(addBlog(created))
+        dispatch(addBlog(updated))
     }
 
     const onLike = async (id) => {
