@@ -44,4 +44,4 @@ export const blogApi = createApi({
     }),
 })
 
-export const { useLazyGetBlogsQuery, useCreateBlogMutation, useUpdateBlogMutation } = blogApi
+export const { useLazyGetBlogsQuery, useCreateBlogMutation, useRemoveBlogMutation, useUpdateBlogMutation } = blogApi

@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { notify } from './reducers/notificationReducer.js'
-import { addBlog, setBlogs, fetchBlogs, removeBlog, clearBlogs } from './reducers/blogReducer.js'
+import { addBlog, setBlogs, clearBlogs, deleteBlog } from './reducers/blogReducer.js'
 import Blog from './components/Blog'
 import Login from './components/Login.jsx'
 import Togglable from './components/Togglable.jsx'
@@ -10,6 +10,7 @@ import Notification from './components/Notification.jsx'
 import {
     useCreateBlogMutation,
     useLazyGetBlogsQuery,
+    useRemoveBlogMutation,
     useUpdateBlogMutation,
 } from './services/api/blogApi.js'
 import { loginUser, logoutUser, readUser } from './reducers/authenticationReducer.js'
@@ -20,6 +21,7 @@ const App = () => {
     const blogs = useSelector(state => state.blogs)
     const [updateBlog] = useUpdateBlogMutation()
     const [createBlog] = useCreateBlogMutation()
+    const [removeBlog] = useRemoveBlogMutation()
 
     const [username, setUsername] = useState('')
     const [password, setPassword] = useState('')
@@ -87,13 +89,15 @@ const App = () => {
         const requested = blogs.find((it) => it.id === id.toString ())
         const updated = { ...requested, likes: (requested.likes || 0) + 1 }
         await updateBlog({ id: requested.id, updated })
-        dispatch(fetchBlogs())
+        const { data: sorted } = await getBlogs()
+        dispatch(setBlogs(sorted))
     }
 
     const onRemove = async (blog) => {
         const { id, title, author } = blog
         if (window.confirm(`Remove blog ${title} by ${author} ?`)) {
-            dispatch(removeBlog(id))
+            dispatch(deleteBlog(id))
+            await removeBlog(id)
         }
     }
 
