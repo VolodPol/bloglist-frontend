@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { notify } from './reducers/notificationReducer.js'
-import { addBlog, setBlogs, clearBlogs, deleteBlog } from './reducers/blogReducer.js'
+import { addBlog, setBlogs, deleteBlog } from './reducers/blogReducer.js'
 import Blog from './components/Blog'
 import Login from './components/Login.jsx'
 import Togglable from './components/Togglable.jsx'
@@ -13,24 +13,23 @@ import {
     useRemoveBlogMutation,
     useUpdateBlogMutation,
 } from './services/api/blogApi.js'
-import { loginUser, logoutUser, readUser } from './reducers/authenticationReducer.js'
 import '../index.css'
+import { useUser } from './hooks/useUser.js'
 
 const App = () => {
-    const user = useSelector(state => state.authentication.user)
+    const { user, login, logout, userForm } = useUser()
+
     const blogs = useSelector(state => state.blogs)
+    const [getBlogs] = useLazyGetBlogsQuery()
     const [updateBlog] = useUpdateBlogMutation()
     const [createBlog] = useCreateBlogMutation()
     const [removeBlog] = useRemoveBlogMutation()
 
-    const [username, setUsername] = useState('')
-    const [password, setPassword] = useState('')
     const [createdByUser, setCreatedByUser] = useState(() => new Set())
+
     const blogFormRef = useRef(null)
 
     const dispatch = useDispatch()
-
-    const [ getBlogs ] = useLazyGetBlogsQuery()
 
     useEffect(() => {
         if (user) {
@@ -40,10 +39,6 @@ const App = () => {
             })
         }
     }, [dispatch, getBlogs, user])
-
-    useEffect(() => {
-        dispatch(readUser())
-    }, [dispatch])
 
     useEffect(() => {
         if (blogs && user) {
@@ -58,16 +53,13 @@ const App = () => {
     const handleLogin = async (event) => {
         event.preventDefault()
         try {
-            dispatch(loginUser(username, password))
-            setUsername('')
-            setPassword('')
+            await login()
         } catch { dispatch(notify('Wrong credentials')) }
     }
 
     const handleLogout = (event) => {
         event.preventDefault()
-        dispatch(logoutUser())
-        dispatch(clearBlogs())
+        logout()
         setCreatedByUser(new Set())
     }
 
@@ -119,13 +111,7 @@ const App = () => {
         <div>
             <Notification />
             {!user && (
-                <Login
-                    handleLogin={handleLogin}
-                    username={username}
-                    setUsername={setUsername}
-                    password={password}
-                    setPassword={setPassword}
-                />
+                <Login handleLogin={ handleLogin } { ...userForm  } />
             )}
             {user && (
                 <div>
