@@ -1,13 +1,13 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react'
 
-const authQuery = fetchBaseQuery(({
+const authQuery = fetchBaseQuery({
     baseUrl: '/api/blogs',
     prepareHeaders: (headers, { getState }) => {
         const token = getState().authentication.token
         if (token) headers.set('Authorization', `Bearer ${token}`)
         return headers
     }
-}))
+})
 
 export const blogApi = createApi({
     reducerPath: 'blogApi',

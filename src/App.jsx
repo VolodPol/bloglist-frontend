@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from 'react'
+import { Routes, Route } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
 import { notify } from './reducers/notificationReducer.js'
 import { addBlog, setBlogs, deleteBlog } from './reducers/blogReducer.js'
@@ -15,6 +16,7 @@ import {
 } from './services/api/blogApi.js'
 import '../index.css'
 import { useUser } from './hooks/useUser.js'
+import { UsersSummary } from './components/UsersSummary.jsx'
 
 const App = () => {
     const { user, login, logout, userForm } = useUser()
@@ -26,9 +28,7 @@ const App = () => {
     const [removeBlog] = useRemoveBlogMutation()
 
     const [createdByUser, setCreatedByUser] = useState(() => new Set())
-
     const blogFormRef = useRef(null)
-
     const dispatch = useDispatch()
 
     useEffect(() => {
@@ -125,10 +125,16 @@ const App = () => {
                     </div>
                     <br />
 
-                    <Togglable buttonLabel='create new blog' ref={blogFormRef}>
-                        <NewBlogForm onCreate={onCreate} notify={notify} />
-                    </Togglable>
-                    {blogsSection()}
+                    <Routes>
+                        <Route path={'/'} element={ <>
+                            <Togglable buttonLabel='create new blog' ref={blogFormRef}>
+                                <NewBlogForm onCreate={onCreate} notify={notify} />
+                            </Togglable>
+                            { blogsSection() }
+                        </>}/>
+                        <Route path={'/users'} element={ <UsersSummary/> }/>
+
+                    </Routes>
                 </div>
             )}
         </div>
