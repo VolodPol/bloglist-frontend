@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react'
-import { Routes, Route } from 'react-router-dom'
+import { Routes, Route, useMatch } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
 import { notify } from './reducers/notificationReducer.js'
 import { addBlog, setBlogs, deleteBlog } from './reducers/blogReducer.js'
@@ -16,7 +16,8 @@ import {
 } from './services/api/blogApi.js'
 import '../index.css'
 import { useUser } from './hooks/useUser.js'
-import { UsersSummary } from './components/UsersSummary.jsx'
+import { Users } from './components/Users.jsx'
+import { UserView } from './components/UserView.jsx'
 
 const App = () => {
     const { user, login, logout, userForm } = useUser()
@@ -30,6 +31,11 @@ const App = () => {
     const [createdByUser, setCreatedByUser] = useState(() => new Set())
     const blogFormRef = useRef(null)
     const dispatch = useDispatch()
+
+    const userMatch = useMatch('/users/:id')
+    const userViewExtractor = (users) => {
+        return userMatch ? users.find(u => u.id === userMatch.params.id) : null
+    }
 
     useEffect(() => {
         if (user) {
@@ -132,7 +138,10 @@ const App = () => {
                             </Togglable>
                             { blogsSection() }
                         </>}/>
-                        <Route path={'/users'} element={ <UsersSummary/> }/>
+
+                        <Route path={'/users'} element={ <Users/> }/>
+                        <Route path={'/users/:id'} element={ <UserView userExtractor={userViewExtractor}/> }/>
+
 
                     </Routes>
                 </div>
