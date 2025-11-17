@@ -111,7 +111,6 @@ const App = () => {
             )}
             {user && (
                 <div>
-                    <h2>blogs</h2>
                     <div>
                         <form onSubmit={handleLogout}>
                             <nav className={'menu'}>
@@ -121,8 +120,7 @@ const App = () => {
                             </nav>
                         </form>
                     </div>
-                    <br />
-
+                    <h2>blog app</h2>
                     <Routes>
                         <Route path={'/'} element={ <>
                             <Togglable buttonLabel='create new blog' ref={blogFormRef}>
