@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react'
-import { Routes, Route } from 'react-router-dom'
+import { Routes, Route, Link } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
 import { notify } from './reducers/notificationReducer.js'
 import { addBlog, setBlogs, deleteBlog } from './reducers/blogReducer.js'
@@ -97,7 +97,7 @@ const App = () => {
 
     const blogsSection = () => (
         <div>
-            {blogs.map((blog) => <Blog blog={blog}/>)}
+            {blogs.map((blog) => <Blog key={blog.id} blog={blog}/>)}
         </div>
     )
 
@@ -112,9 +112,11 @@ const App = () => {
                     <h2>blogs</h2>
                     <div>
                         <form onSubmit={handleLogout}>
-                            <label>
-                                {user.name} logged in <button type='submit'>Logout</button>
-                            </label>
+                            <nav className={'menu'}>
+                                <label>
+                                    <Link to={'/'}>blogs</Link> <Link to={'/users'}>users</Link> {user.name} logged in <button type='submit'>Logout</button>
+                                </label>
+                            </nav>
                         </form>
                     </div>
                     <br />
