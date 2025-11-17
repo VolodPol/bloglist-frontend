@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react'
-import { Routes, Route, Link } from 'react-router-dom'
+import { Routes, Route, Link, useNavigate } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
 import { notify } from './reducers/notificationReducer.js'
 import { addBlog, setBlogs, deleteBlog } from './reducers/blogReducer.js'
@@ -32,6 +32,7 @@ const App = () => {
     const [createdByUser, setCreatedByUser] = useState(() => new Set())
     const blogFormRef = useRef(null)
     const dispatch = useDispatch()
+    const navigate = useNavigate()
 
     useEffect(() => {
         if (user) {
@@ -92,6 +93,7 @@ const App = () => {
         if (window.confirm(`Remove blog ${title} by ${author} ?`)) {
             dispatch(deleteBlog(id))
             await removeBlog(id)
+            navigate('/')
         }
     }
 
