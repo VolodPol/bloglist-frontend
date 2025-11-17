@@ -1,9 +1,8 @@
 import { useState, useEffect, useRef } from 'react'
-import { Routes, Route, useMatch } from 'react-router-dom'
+import { Routes, Route } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
 import { notify } from './reducers/notificationReducer.js'
 import { addBlog, setBlogs, deleteBlog } from './reducers/blogReducer.js'
-import Blog from './components/Blog'
 import Login from './components/Login.jsx'
 import Togglable from './components/Togglable.jsx'
 import NewBlogForm from './components/NewBlogForm.jsx'
@@ -18,6 +17,8 @@ import '../index.css'
 import { useUser } from './hooks/useUser.js'
 import { Users } from './components/Users.jsx'
 import { UserView } from './components/UserView.jsx'
+import { BlogView } from './components/BlogView.jsx'
+import { Blog } from './components/Blog.jsx'
 
 const App = () => {
     const { user, login, logout, userForm } = useUser()
@@ -31,11 +32,6 @@ const App = () => {
     const [createdByUser, setCreatedByUser] = useState(() => new Set())
     const blogFormRef = useRef(null)
     const dispatch = useDispatch()
-
-    const userMatch = useMatch('/users/:id')
-    const userViewExtractor = (users) => {
-        return userMatch ? users.find(u => u.id === userMatch.params.id) : null
-    }
 
     useEffect(() => {
         if (user) {
@@ -101,15 +97,7 @@ const App = () => {
 
     const blogsSection = () => (
         <div>
-            {blogs.map((blog) => (
-                <Blog
-                    key={blog.id}
-                    blog={blog}
-                    onLike={onLike}
-                    isRemovable={createdByUser.has(blog.id)}
-                    onRemove={onRemove}
-                />
-            ))}
+            {blogs.map((blog) => <Blog blog={blog}/>)}
         </div>
     )
 
@@ -140,8 +128,15 @@ const App = () => {
                         </>}/>
 
                         <Route path={'/users'} element={ <Users/> }/>
-                        <Route path={'/users/:id'} element={ <UserView userExtractor={userViewExtractor}/> }/>
-
+                        <Route path={'/users/:id'} element={ <UserView /> }/>
+                        <Route path={'/blogs/:id'} element={
+                            <BlogView
+                                blogs={blogs}
+                                onLike={onLike}
+                                createdByUser={createdByUser}
+                                onRemove={onRemove}
+                            />
+                        }/>
 
                     </Routes>
                 </div>

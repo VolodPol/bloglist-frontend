@@ -1,6 +1,12 @@
 import { useFetchUsersQuery } from '../services/api/userApi.js'
+import { useMatch } from 'react-router-dom'
 
-export const UserView = ({ userExtractor }) => {
+export const UserView = () => {
+    const userMatch = useMatch('/users/:id')
+    const userExtractor = (users) => {
+        return userMatch ? users.find(u => u.id === userMatch.params.id) : null
+    }
+
     const { user } = useFetchUsersQuery(undefined, {
         'selectFromResult': ({ data = [], isSuccess }) => ({
             user: isSuccess ? userExtractor(data) : null
