@@ -64,6 +64,7 @@ const App = () => {
         event.preventDefault()
         logout()
         setCreatedByUser(new Set())
+        navigate('/')
     }
 
     const onCreate = async (newBlog) => {

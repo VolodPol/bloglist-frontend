@@ -32,12 +32,14 @@ export const readUser = () => {
     }
 }
 
-export const loginUser = (username, password) => {
+export const loginUser = (username, password, onFail) => {
     return async (dispatch) => {
-        const loggedIn = await loginService.login({ username, password })
-        window.localStorage.setItem(USER_LOCAL_ITEM_NAME, JSON.stringify(loggedIn))
-        dispatch(setToken(loggedIn.token))
-        dispatch(setUser(loggedIn))
+        try {
+            const loggedIn = await loginService.login({ username, password })
+            window.localStorage.setItem(USER_LOCAL_ITEM_NAME, JSON.stringify(loggedIn))
+            dispatch(setToken(loggedIn.token))
+            dispatch(setUser(loggedIn))
+        } catch { onFail() }
     }
 }
 
@@ -45,6 +47,7 @@ export const logoutUser = () => {
     return async (dispatch) => {
         window.localStorage.clear()
         dispatch(setUser(null))
+        dispatch(setToken(null))
     }
 }
 

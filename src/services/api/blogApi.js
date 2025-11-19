@@ -37,11 +37,18 @@ export const blogApi = createApi({
         removeBlog: builder.mutation({
             query: (id) => ({
                 url: `/${id}`,
-                method: 'DELETE'
+                method: 'DELETE',
             }),
             invalidatesTags: ['Blogs'],
+        }),
+        saveComment: builder.mutation({
+            query: ({ blogId, newComment }) => ({
+                url: `/${blogId}/comments`,
+                method: 'POST',
+                body: newComment
+            })
         }),
     }),
 })
 
-export const { useLazyGetBlogsQuery, useCreateBlogMutation, useRemoveBlogMutation, useUpdateBlogMutation } = blogApi
+export const { useLazyGetBlogsQuery, useCreateBlogMutation, useRemoveBlogMutation, useUpdateBlogMutation, useSaveCommentMutation } = blogApi

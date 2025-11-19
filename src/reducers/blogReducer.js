@@ -13,9 +13,14 @@ const blogSlice = createSlice({
         clearBlogs: () => [],
         deleteBlog: (state, action) => {
             return state.filter((it) => it.id !== action.payload)
+        },
+        addComment: (state, action) => {
+            const { blogId, comment } = action.payload
+            const blog = state.find(b => b.id === blogId)
+            blog.comments = blog.comments.concat(comment)
         }
     }
 })
 
-export const { setBlogs, deleteBlog, clearBlogs, addBlog } = blogSlice.actions
+export const { setBlogs, deleteBlog, clearBlogs, addBlog, addComment } = blogSlice.actions
 export default blogSlice.reducer
