@@ -55,9 +55,7 @@ const App = () => {
 
     const handleLogin = async (event) => {
         event.preventDefault()
-        try {
-            await login()
-        } catch { dispatch(notify('Wrong credentials')) }
+        await login()
     }
 
     const handleLogout = (event) => {
