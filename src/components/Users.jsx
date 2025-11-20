@@ -1,38 +1,40 @@
 import { useFetchUsersQuery } from '../services/api/userApi.js'
 import { Link } from 'react-router-dom'
+import { TableContainer, Paper, Table, TableHead, TableBody, TableRow, TableCell } from '@mui/material'
 
 export const Users = () => {
     const { data: users = [], isSuccess } = useFetchUsersQuery()
 
     function Row ({ userInfo }) {
         return(
-            <tr>
-                <td>{ <Link to={`/users/${userInfo.id}`}>{ userInfo.username }</Link> }</td>
-                <td>{ userInfo.blogs.length }</td>
-            </tr>
+            <TableRow>
+                <TableCell>{ <Link to={`/users/${userInfo.id}`}>{ userInfo.username }</Link> }</TableCell>
+                <TableCell>{ userInfo.blogs.length }</TableCell>
+            </TableRow>
         )
     }
 
     function provideStatistics() {
-        return users
-            .map((u) => (<Row key={u.username} userInfo={u}/>))
+        return <TableBody>
+            { users.map((u) => (<Row key={u.username} userInfo={u}/>)) }
+        </TableBody>
     }
 
     function UserSection() {
         return (
             <div>
                 <h2>Users</h2>
-                <table>
-                    <thead>
-                        <tr>
-                            <th></th>
-                            <th><b>blogs created</b></th>
-                        </tr>
-                    </thead>
-                    <tbody>
+                <TableContainer component={Paper}>
+                    <Table>
+                        <TableHead>
+                            <TableRow>
+                                <TableCell></TableCell>
+                                <TableCell><b>blogs created</b></TableCell>
+                            </TableRow>
+                        </TableHead>
                         { isSuccess && provideStatistics() }
-                    </tbody>
-                </table>
+                    </Table>
+                </TableContainer>
             </div>
         )
     }

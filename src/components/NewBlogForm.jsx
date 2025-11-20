@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useDispatch } from 'react-redux'
 import { notify } from '../reducers/notificationReducer.js'
+import { Typography, Box, Stack, TextField, Button } from '@mui/material'
 
 const NewBlogForm = ({ onCreate }) => {
     const [titleField, setTitleField] = useState('')
@@ -29,43 +30,47 @@ const NewBlogForm = ({ onCreate }) => {
 
     return (
         <div>
-            <h2>create new</h2>
-            <form onSubmit={handleBlogCreation}>
-                <div>
-                    <label>
-                        title:{' '}
-                        <input
-                            type='text'
-                            value={titleField}
-                            onChange={({ target }) => setTitleField(target.value)}
-                        />
-                    </label>
-                </div>
+            <Typography variant='h5'>Create new</Typography>
+            <Box component='form' onSubmit={handleBlogCreation}>
+                <Stack spacing={2} sx={{ maxWidth: 400 }}>
 
-                <div>
-                    <label>
-                        author:{' '}
-                        <input
-                            type='text'
-                            value={authorField}
-                            onChange={({ target }) => setAuthorField(target.value)}
-                        />
-                    </label>
-                </div>
+                    <TextField
+                        label="Title"
+                        variant="outlined"
+                        value={titleField}
+                        onChange={({ target }) => setTitleField(target.value)}
+                        fullWidth
+                        required
+                    />
 
-                <div>
-                    <label>
-                        url:{' '}
-                        <input
-                            type='text'
-                            value={urlField}
-                            onChange={({ target }) => setUrlField(target.value)}
-                        />
-                    </label>
-                </div>
+                    <TextField
+                        label="Author"
+                        variant="outlined"
+                        value={authorField}
+                        onChange={({ target }) => setAuthorField(target.value)}
+                        fullWidth
+                        required
+                    />
 
-                <button type='submit'>create</button>
-            </form>
+                    <TextField
+                        label="Url"
+                        variant="outlined"
+                        value={urlField}
+                        onChange={({ target }) => setUrlField(target.value)}
+                        fullWidth
+                        required
+                    />
+
+                    <Button
+                        type='submit'
+                        variant="contained"
+                        size="large"
+                    >
+                        Create
+                    </Button>
+
+                </Stack>
+            </Box>
         </div>
     )
 }

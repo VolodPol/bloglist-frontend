@@ -13,12 +13,12 @@ import {
     useRemoveBlogMutation,
     useUpdateBlogMutation,
 } from './services/api/blogApi.js'
-import '../index.css'
 import { useUser } from './hooks/useUser.js'
 import { Users } from './components/Users.jsx'
 import { UserView } from './components/UserView.jsx'
 import { BlogView } from './components/BlogView.jsx'
 import { Blog } from './components/Blog.jsx'
+import { Box, Toolbar, Typography, Button, AppBar } from '@mui/material'
 
 const App = () => {
     const { user, login, logout, userForm } = useUser()
@@ -110,16 +110,32 @@ const App = () => {
             )}
             {user && (
                 <div>
-                    <div>
-                        <form onSubmit={handleLogout}>
-                            <nav className={'menu'}>
-                                <label>
-                                    <Link to={'/'}>blogs</Link> <Link to={'/users'}>users</Link> {user.name} logged in <button type='submit'>Logout</button>
-                                </label>
-                            </nav>
-                        </form>
-                    </div>
-                    <h2>blog app</h2>
+                    <AppBar position="static">
+                        <Toolbar>
+                            <Box sx={{ flexGrow: 1, display: 'flex', gap: 1 }}>
+                                <Button color="inherit" component={Link} to="/">
+                                    Blogs
+                                </Button>
+                                <Button color="inherit" component={Link} to="/users">
+                                    Users
+                                </Button>
+                            </Box>
+
+                            <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                                <Typography variant="body1" component="span">
+                                    {user.name} logged in
+                                </Typography>
+
+                                <Box component="form" onSubmit={handleLogout}>
+                                    <Button color="inherit" variant="outlined" type="submit">
+                                        Logout
+                                    </Button>
+                                </Box>
+                            </Box>
+                        </Toolbar>
+                    </AppBar>
+
+                    <Typography variant='h3' sx={{ my: '1em' }}>Blog App</Typography>
                     <Routes>
                         <Route path={'/'} element={ <>
                             <Togglable buttonLabel='create new blog' ref={blogFormRef}>
